@@ -40,13 +40,7 @@ class lin_reg:
     
 
 
-# In[ ]:
 
-
-
-
-
-# In[ ]:
 
 
 
