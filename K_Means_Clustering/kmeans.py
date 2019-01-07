@@ -31,20 +31,4 @@ class Kmeans:
             for i in range(k):
                 self.centroids[i]=np.mean(self.X[np.nonzero(self.cindex==i)],axis=0)
         return self.cindex
-    
-import matplotlib.pyplot as plt
-dat = np.loadtxt("/home/rath772k/Downloads/data_1024.csv", delimiter="\t", skiprows=1)
-dp=Kmeans()
-dat=dp.normalize(dat)
-dp.fit(dat)
-ci=dp.cluster(2,100)
-plt.scatter(dat[:,0],dat[:,1])
-plt.xlabel("feature 1")
-plt.ylabel("feature 2")
-plt.title("Training Data")
-plt.show()
-plt.scatter(dat[:,0],dat[:,1],c=ci)
-plt.xlabel("feature 1")
-plt.ylabel("feature 2")
-plt.title("Clustered Data")
-plt.show()
+
