@@ -37,19 +37,4 @@ class knn:
     
     def accuracy(self,x_test,y_test):
         return np.mean(self.predict(x_test)==y_test)*100
-    
-    
-    
-dat = np.loadtxt(open("/home/rath772k/.config/spyder-py3/DoubleMoon2.txt"),delimiter=',')
-np.random.shuffle(dat)
-x = dat[:,0:-1]
-y = dat[:,-1:]
-(a,b)=np.shape(x)
-dp = knn()
-dp.fit(x_train,y_train)
-x = dp.normalize(x)
-x_train=x[0:7*a//10,:]
-y_train=y[0:7*a//10,:]
-x_test=x[7*a//10:a,:]
-y_test=y[7*a//10:a,:]
-print(dp.accuracy(x_test,y_test))
+
