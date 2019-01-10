@@ -45,31 +45,3 @@ class log_reg:
     def accuracy(self,x_test,y_test):
         acc=np.mean(self.predict(x_test)==y_test)
         return acc*100
-import warnings
-warnings.filterwarnings("ignore")
-dat = np.loadtxt(open("/home/rath772k/.config/spyder-py3/LogisticRegressionData1.txt"),delimiter=',')
-np.random.shuffle(dat)
-x = dat[:,0:-1]
-y = dat[:,-1:]
-(a,b)=np.shape(x)
-dp = log_reg()
-x,Mean,Std = dp.normalize(x)
-x_train=x[0:7*a//10,:]
-y_train=y[0:7*a//10,:]
-x_test=x[7*a//10:a,:]
-y_test=y[7*a//10:a,:]
-print("Mean = ",Mean)
-print("Standard Deviation = ",Std)
-dp.fit(x_train,y_train)
-weight,bias=dp.grad_descent(0.5,1000)
-dp.cost_fn()
-print("weights=",weight)
-print("bias=",bias)
-print (dp.accuracy(x_test,y_test))
-from sklearn.linear_model import LogisticRegression
-ap=LogisticRegression().fit(x_train,y_train)
-res=ap.predict(x_test).reshape(y_test.shape)
-acc=np.mean(res==y_test)
-print(res)
-print(y_test)
-print(acc*100) 
