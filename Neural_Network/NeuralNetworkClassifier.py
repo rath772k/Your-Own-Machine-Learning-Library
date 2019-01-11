@@ -28,8 +28,8 @@ class NNClassifier:
         self.b=[None]*(self.nol-1)
         
         for i in range(self.nol-1):
-            self.w[i]=np.random.rand(self.ls[i],self.ls[i+1])
-            self.b[i]=np.random.rand(1,self.ls[i+1])
+            self.w[i]=np.random.rand(self.ls[i],self.ls[i+1])*2*0.12-0.12
+            self.b[i]=np.random.rand(1,self.ls[i+1])*2*0.12-0.12
             
         self.act=[None]*self.nol
             
@@ -47,9 +47,8 @@ class NNClassifier:
             self.act[i]=self.sigmoid(np.dot(self.act[i-1],self.w[i-1])+self.b[i-1])
             
     def cost_fn(self):
-        cost1,cost2=0,0
-        for i in range(self.m):
-            cost1 += np.sum(self.y[i:i+1].dot(np.log(self.act[self.nol-1]))+(1-self.y[i:i+1]).dot(np.log(1-self.act[self.nol-1])))
+        cost2=0
+        cost1 = np.sum(self.y.dot(np.log(self.act[self.nol-1]))+(1-self.y).dot(np.log(1-self.act[self.nol-1])))
         for i in range(self.nol):
             cost2 += np.sum(np.square(self.w[i]))
             return 1/self.m*(cost2/2-cost1)
@@ -60,19 +59,18 @@ class NNClassifier:
         delt = [None]*self.nol
         self.feedforward(self.X)
         delt[self.nol-1]=self.act[self.nol-1]-self.y
-        for j in range(self.nol-2,-1,-1):
-            delt[j]=(self.w[j].dot(delt[j+1].T).T)*self.act[j]*(1-self.act[j])
+        for j in range(self.nol-2,0,-1):
+            delt[j]=delt[j+1].dot(self.w[j].T)*self.act[j]*(1-self.act[j])
         for j in range(self.nol-1):
-            deltaw[j]=(delt[j+1].T.dot(self.act[j]).T+self.lambda_*self.w[j])/self.m
+            deltaw[j]=(np.dot(self.act[j].T,delt[j+1]))/self.m+(self.lambda_*self.w[j])/self.m
             deltab[j]=(np.sum(delt[j+1],axis=0))/self.m
-        return deltaw,deltab
-    
+            self.w[j]-=self.l_rate*deltaw[j]
+            self.b[j]-=self.l_rate*deltab[j]
+            
     def grad_descent(self,l_rate,no_of_iter):
+        self.l_rate=l_rate
         for i in range(no_of_iter):
-            deltaw,deltab=self.backpropagation()
-            for j in range(self.nol-1):
-                self.w[j]-=l_rate*deltaw[j]
-                self.b[j]-=l_rate*deltab[j]
+            self.backpropagation()
         return self.w,self.b
     
     def predict(self,xin):
@@ -83,29 +81,7 @@ class NNClassifier:
     def accuracy(self,x,y):
         res=self.predict(x)
         return np.mean(y==res)*100
-    
-dat = np.loadtxt(open("/home/rath772k/.config/spyder-py3/DoubleMoon2.txt"),delimiter=',')
-np.random.shuffle(dat)
-x = dat[:,0:-1]
-y = dat[:,-1:]
-x=np.array(x)
-(a,b)=np.shape(x)
-dp = NNClassifier()
 
-x = dp.normalize(x)
-x_train=x[0:7*a//10,:]
-y_train=y[0:7*a//10,:]
-x_test=x[7*a//10:a,:]
-y_test=y[7*a//10:a,:]
-dp.fit(x_train,y_train,[9])
-dp.grad_descent(0.001,100)
-print(dp.accuracy(x_test,y_test))
-
-from sklearn.neural_network import MLPClassifier
-ap=MLPClassifier(hidden_layer_sizes=(3), activation='logistic', solver='lbfgs', alpha=0, learning_rate_init=0.001, max_iter=200)
-ap.fit(x_train,y_train)
-res=ap.predict(x_test)
-print(np.mean(y_test==res)*100)
 
                 
         
